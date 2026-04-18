@@ -44,8 +44,70 @@ Start node:
 Mine (new terminal):
 ./build/gmn-mine GMN1YOUR_ADDRESS_HERE
 
+## Verifying The AI Validation Layer
+
+### Method 1 — Run Oracle Node
+Watch AI validation live:
+```
+./build/gmn-oracle start
+```
+
+You will see every data point scored:
+```
+[AI] Confidence score: 94.2% — PASSED
+[AI] Seasonal pattern match: 91.8% — PASSED
+```
+
+### Method 2 — Run AI Tests
+```
+go test ./internal/ai/... -v
+go test ./internal/oracle/... -v
+```
+
+All tests passing = AI working correctly
+
+### Method 3 — On Chain Verification
+Every oracle submission recorded on chain with:
+- Raw data value
+- AI confidence score
+- Pass or fail status
+- Timestamp
+- Oracle node ID
+
+Read the blockchain to verify every
+AI decision ever made back to genesis block.
+
+### Method 4 — Audit The Model
+AI model weights published openly:
+```
+/models/isolation_forest.json
+/models/lstm_weights.json
+```
+
+Download and verify yourself:
+- Same input always = same output
+- Deterministic and auditable
+- No black box
+
+### Method 5 — Test With Bad Data
+Feed deliberately bad data and confirm rejection:
+```
+go test ./internal/ai/... -run TestAnomalyDetection -v
+```
+
+Expected: data deviating 10x from normal
+scores below 60% and gets rejected
+
+### Confidence Score Thresholds
+```
+95-100%   Clean — passes immediately
+80-94%    Acceptable — minor anomaly noted
+60-79%    Suspicious — reduced weight
+Below 60% Rejected — held for review
+```
+
 ## Whitepaper
-GAMINIUM_Whitepaper_v1.0.0.pdf
+GAMINIUM_Whitepaper_v1.1.0.pdf
 
 ## License
 MIT — Released by Ocamn Dravin
