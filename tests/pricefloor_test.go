@@ -11,7 +11,6 @@ func TestFloorFormulaBaseline(t *testing.T) {
 	// All factors at 1.0 (neutral) — floor should equal BaseUnitCost
 	inputs := pricefloor.FloorInputs{
 		EnergyUSDkWh:           0.10, // exactly base energy
-		CommodityIndex:         1.0,
 		CleanEnergyMultiplier:  1.0,
 		TotalSupplyMinium:      config.TotalSupplyMinum,
 		CirculatingMinium:      config.TotalSupplyMinum, // fully circulating → scarcity = 1.0
@@ -34,7 +33,6 @@ func TestFloorScarcityFactor(t *testing.T) {
 	// Low circulation → high scarcity
 	inputs := pricefloor.FloorInputs{
 		EnergyUSDkWh:           0.10,
-		CommodityIndex:         1.0,
 		CleanEnergyMultiplier:  1.0,
 		TotalSupplyMinium:      config.TotalSupplyMinum,
 		CirculatingMinium:      config.TotalSupplyMinum / 10, // only 10% circulating
@@ -56,7 +54,6 @@ func TestFloorScarcityFactor(t *testing.T) {
 func TestFloorCleanEnergyMultiplier(t *testing.T) {
 	base := pricefloor.FloorInputs{
 		EnergyUSDkWh:           0.10,
-		CommodityIndex:         1.0,
 		CirculatingMinium:      config.TotalSupplyMinum,
 		TotalSupplyMinium:      config.TotalSupplyMinum,
 		DailyTxVolumeMinium:    1000 * config.MiniumPerGMN,
@@ -78,7 +75,6 @@ func TestFloorCleanEnergyMultiplier(t *testing.T) {
 func TestFloorVolumeCapAt3x(t *testing.T) {
 	inputs := pricefloor.FloorInputs{
 		EnergyUSDkWh:           0.10,
-		CommodityIndex:         1.0,
 		CleanEnergyMultiplier:  1.0,
 		CirculatingMinium:      config.TotalSupplyMinum,
 		TotalSupplyMinium:      config.TotalSupplyMinum,
@@ -106,21 +102,5 @@ func TestCleanMultiplierRange(t *testing.T) {
 	m := pricefloor.Multiplier(375)
 	if m < 1.0 || m > 1.5 {
 		t.Errorf("midpoint multiplier out of range: %.2f", m)
-	}
-}
-
-func TestCommodityBasketValue(t *testing.T) {
-	// At base values, basket should be 1.0
-	prices := &pricefloor.CommodityPrices{
-		GoldUSDoz:    2000.0,
-		OilUSDBarrel: 75.0,
-		NatGasMMBtu:  2.50,
-		CarbonEURt:   60.0,
-	}
-	basket := prices.BasketValue()
-	// Carbon converts EUR→USD (×1.08), so it won't be exactly 1.0
-	// But should be close to 1.0
-	if basket < 0.9 || basket > 1.2 {
-		t.Errorf("commodity basket at base values should be ~1.0, got %.3f", basket)
 	}
 }

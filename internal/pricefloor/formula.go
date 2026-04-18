@@ -4,9 +4,9 @@ import "math"
 
 // FloorFormula implements the GAMINIUM price floor calculation:
 //
-//   FLOOR = BaseUnitCost × EnergyIndex × CommodityIndex × CleanEnergyMultiplier
-//           × ScarcityFactor × VolumeFactor
+//   FLOOR = BaseUnitCost × EnergyIndex × CleanMultiplier × ScarcityFactor × VolumeFactor
 //
+// Pure energy basis — no commodities, no gold, no oil.
 // All factors are dimensionless multipliers; FLOOR is expressed in USD per GMN.
 
 const (
@@ -29,18 +29,15 @@ type FloorInputs struct {
 	// Energy
 	EnergyUSDkWh float64 // USD/kWh (72h rolling average of government data)
 
-	// Commodity basket (equal weighted index, base = 1.0)
-	CommodityIndex float64
-
 	// Clean energy multiplier (1.0–1.5)
 	CleanEnergyMultiplier float64
 
 	// Supply
-	TotalSupplyMinium     int64
-	CirculatingMinium     int64
+	TotalSupplyMinium      int64
+	CirculatingMinium      int64
 
 	// Volume
-	DailyTxVolumeMinium   int64 // total GMN transacted in last 24h (in Minium)
+	DailyTxVolumeMinium    int64 // total GMN transacted in last 24h (in Minium)
 	BaselineTxVolumeMinium int64 // 30-day average daily volume (in Minium)
 }
 
@@ -49,7 +46,6 @@ type FloorResult struct {
 	Floor                 float64 // USD per GMN
 	BaseUnitCost          float64
 	EnergyFactor          float64
-	CommodityFactor       float64
 	CleanEnergyMultiplier float64
 	ScarcityFactor        float64
 	VolumeFactor          float64
@@ -57,15 +53,10 @@ type FloorResult struct {
 
 // Calculate computes the GAMINIUM price floor given all inputs.
 func Calculate(inputs FloorInputs) FloorResult {
-	// Energy factor: normalise USD/kWh against base energy cost
-	// Base reference: 0.10 USD/kWh (global average 2024)
+	// Energy factor: normalise USD/kWh against base energy cost (0.10 USD/kWh global avg 2024)
 	const baseEnergyUSDkWh = 0.10
 	energyFactor := inputs.EnergyUSDkWh / baseEnergyUSDkWh
 	energyFactor = math.Max(0.5, math.Min(5.0, energyFactor)) // clamp to [0.5, 5.0]
-
-	// Commodity factor: already normalised (base = 1.0)
-	commodityFactor := inputs.CommodityIndex
-	commodityFactor = math.Max(0.5, math.Min(5.0, commodityFactor))
 
 	// Clean energy multiplier: already in [1.0, 1.5]
 	cleanMult := inputs.CleanEnergyMultiplier
@@ -85,13 +76,12 @@ func Calculate(inputs FloorInputs) FloorResult {
 		volumeFactor = math.Max(0.5, math.Min(VolumeFactorCap, rawFactor))
 	}
 
-	floor := BaseUnitCost * energyFactor * commodityFactor * cleanMult * scarcityFactor * volumeFactor
+	floor := BaseUnitCost * energyFactor * cleanMult * scarcityFactor * volumeFactor
 
 	return FloorResult{
 		Floor:                 floor,
 		BaseUnitCost:          BaseUnitCost,
 		EnergyFactor:          energyFactor,
-		CommodityFactor:       commodityFactor,
 		CleanEnergyMultiplier: cleanMult,
 		ScarcityFactor:        scarcityFactor,
 		VolumeFactor:          volumeFactor,

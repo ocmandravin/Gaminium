@@ -7,7 +7,7 @@
     "num_trees": 100,
     "sample_size": 256,
     "max_depth": 8,
-    "features": ["energy_usd_kwh", "commodity_index", "carbon_intensity"]
+    "features": ["energy_usd_kwh", "carbon_intensity"]
   },
   "note": "Production weights are loaded via binary checkpoint. This file contains metadata only. Run `gaminium train-models` to generate weights from historical data."
 }

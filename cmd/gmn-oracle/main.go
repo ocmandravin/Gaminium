@@ -92,7 +92,8 @@ func main() {
 
 	fmt.Println("Oracle node running. Fetching price data every 2016 blocks...")
 	fmt.Println("In production this syncs with the blockchain and submits signed prices.")
-	fmt.Println("Press Ctrl+C to stop.\n")
+	fmt.Println("Press Ctrl+C to stop.")
+	fmt.Println()
 
 	// Demo: run one fetch immediately
 	runOracleCycle(fetcher, network, calc, 0)

@@ -44,7 +44,8 @@ func main() {
 	}
 
 	fmt.Printf("Starting mining at block height 1...\n")
-	fmt.Println("Press Ctrl+C to stop.\n")
+	fmt.Println("Press Ctrl+C to stop.")
+	fmt.Println()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	sig := make(chan os.Signal, 1)

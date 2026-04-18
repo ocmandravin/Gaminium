@@ -10,6 +10,8 @@ peer-to-peer electronic currency.
 ## What Is GAMINIUM
 The first cryptocurrency with a guaranteed
 price floor anchored to global energy markets.
+Pure energy anchored price floor. No commodities.
+No gold. No oil. Just the real cost of energy globally.
 Quantum resistant from genesis block one.
 Fixed supply. Community governed. Nobody owns it.
 
