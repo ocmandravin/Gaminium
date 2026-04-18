@@ -33,9 +33,9 @@ func main() {
 	}
 
 	fmt.Printf("Miner address: %s\n", minerAddr)
-	fmt.Printf("Block reward: %d GMN (before halving)\n\n", config.GenesisReward/config.MiniumPerGMN)
+	fmt.Printf("Block reward:  %d GMN (before halving)\n", config.GenesisReward/config.MiniumPerGMN)
+	fmt.Printf("No peer connection required — miner runs standalone.\n\n")
 
-	// Set up genesis block for standalone mining demo
 	genesis := blockchain.GenesisBlock(minerAddr)
 	chain, err := blockchain.NewChain(genesis)
 	if err != nil {
@@ -43,13 +43,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Starting mining on block height 1...\n")
+	fmt.Printf("Starting mining at block height 1...\n")
 	fmt.Println("Press Ctrl+C to stop.\n")
 
+	ctx, cancel := context.WithCancel(context.Background())
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
-
-	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
 		<-sig
 		cancel()
@@ -75,43 +74,53 @@ func mineLoop(ctx context.Context, chain *blockchain.Chain, minerAddr string) {
 		bits := chain.NextDifficulty()
 		reward := consensus.BlockReward(nextHeight)
 
-		block := blockchain.NewBlock(nextHeight, tip.Header.Hash(), bits)
-		block.Coinbase = &blockchain.CoinbaseTx{
-			Height:       nextHeight,
-			MinerAddress: minerAddr,
-			Reward:       reward,
-			ExtraData:    []byte(fmt.Sprintf("%s/block/%d", config.Name, nextHeight)),
+		// Rebuild the block fresh each attempt so the timestamp stays current.
+		// This prevents blocks from being rejected for a stale timestamp after
+		// a long PoW search on high difficulty.
+		buildBlock := func() *blockchain.Block {
+			b := blockchain.NewBlock(nextHeight, tip.Header.Hash(), bits)
+			b.Coinbase = &blockchain.CoinbaseTx{
+				Height:       nextHeight,
+				MinerAddress: minerAddr,
+				Reward:       reward,
+				ExtraData:    []byte(fmt.Sprintf("%s/block/%d", config.Name, nextHeight)),
+			}
+			b.Header.MerkleRoot = b.ComputeMerkleRoot()
+			return b
 		}
-		block.Header.MerkleRoot = block.ComputeMerkleRoot()
+
+		block := buildBlock()
 
 		fmt.Printf("Mining block %d | difficulty 0x%08x | reward %.8f GMN\n",
 			nextHeight, bits, float64(reward)/float64(config.MiniumPerGMN))
 
-		mineCtx, mineCancel := context.WithTimeout(ctx, 10*time.Minute)
-		result, err := consensus.RandomXMine(mineCtx, block.Header.Bytes(), bits)
-		mineCancel()
-
+		// No timeout — mine until a solution is found or the user stops the process.
+		result, err := consensus.RandomXMine(ctx, block.Header.Bytes(), bits)
 		if err != nil {
+			// Only exit if the parent context was cancelled (Ctrl+C).
 			select {
 			case <-ctx.Done():
 				return
 			default:
-				fmt.Printf("Mining interrupted: %v\n", err)
+				fmt.Printf("Mining error: %v — retrying\n", err)
 				continue
 			}
 		}
 
+		// Refresh the block with a current timestamp before submitting,
+		// then apply the found nonce.
+		block = buildBlock()
 		block.Header.Nonce = result.Nonce
 		block.Header.MerkleRoot = block.ComputeMerkleRoot()
 
 		if err := chain.AddBlock(block); err != nil {
-			fmt.Printf("Block rejected: %v\n", err)
+			fmt.Printf("Block rejected: %v — retrying\n", err)
 			continue
 		}
 
 		blocksMined++
 		elapsed := time.Since(startTime)
-		fmt.Printf("✓ Block %d mined! Hash: %s... | Total: %d blocks | Time: %s\n\n",
+		fmt.Printf("Block %d mined! Hash: %s... | Total: %d | Elapsed: %s\n\n",
 			nextHeight,
 			result.Hash.String()[:16],
 			blocksMined,
