@@ -1,0 +1,9 @@
+build/
+*.exe
+*.test
+*.out
+.DS_Store
+gaminium
+gmn-wallet
+gmn-mine
+gmn-oracle

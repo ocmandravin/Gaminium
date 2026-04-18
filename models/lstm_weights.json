@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "name": "GAMINIUM LSTM Anomaly Detector",
+    "version": "1.0.0",
+    "author": "Ocamn Dravin",
+    "trained_on": "90_day_energy_history",
+    "hidden_size": 32,
+    "input_size": 1,
+    "output_size": 1,
+    "sequence_length": 90
+  },
+  "note": "Production weights are loaded from binary checkpoint. This file contains metadata only. Run `gaminium train-models` to generate weights from historical data."
+}

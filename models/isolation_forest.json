@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "name": "GAMINIUM Isolation Forest",
+    "version": "1.0.0",
+    "author": "Ocamn Dravin",
+    "trained_on": "2024_global_energy_prices",
+    "num_trees": 100,
+    "sample_size": 256,
+    "max_depth": 8,
+    "features": ["energy_usd_kwh", "commodity_index", "carbon_intensity"]
+  },
+  "note": "Production weights are loaded via binary checkpoint. This file contains metadata only. Run `gaminium train-models` to generate weights from historical data."
+}
