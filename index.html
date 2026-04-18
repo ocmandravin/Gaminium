@@ -586,7 +586,7 @@ footer {
     </div>
 
     <div class="btn-row">
-      <a class="btn btn-primary" href="GAMINIUM_Whitepaper_v1.0.0.pdf" download>
+      <a class="btn btn-primary" href="GAMINIUM_Whitepaper_v1.1.0.pdf" download>
         ↓ Download Whitepaper
       </a>
       <a class="btn btn-outline" href="https://github.com/ocmandravin/Gaminium" target="_blank" rel="noopener">
@@ -778,12 +778,14 @@ footer {
     <div class="reveal">
       <div class="section-label">Core Innovation</div>
       <h2 class="section-title">The Price Floor</h2>
-      <p style="color:var(--text-dim); margin-bottom:32px; font-size:0.95rem; max-width:640px;">
+      <p style="color:var(--text-dim); margin-bottom:16px; font-size:0.95rem; max-width:640px;">
         GAMINIUM's price floor is a cryptographically enforced minimum value,
-        calculated from the real cost of energy globally. Pure energy basis —
-        no commodities, no gold, no oil.
+        calculated every 2016 blocks from the real cost of energy globally.
         If the market price drops to the floor, the autonomous treasury
         begins buying GMN automatically.
+      </p>
+      <p style="font-family:var(--mono); font-size:1rem; font-weight:700; color:var(--gold-lt); margin-bottom:32px; letter-spacing:0.04em;">
+        No commodities. No gold. No oil. Pure energy.
       </p>
     </div>
 
@@ -792,11 +794,17 @@ footer {
       <div class="formula-eq">
         <span class="factor">FLOOR</span>
         <span class="op">=</span>
-        <span class="factor">Energy Index</span>
+        <span class="factor">Base Cost</span><br>
+        <span style="visibility:hidden;" class="op">=</span>
         <span class="op">×</span>
-        <span class="factor">Clean Energy Multiplier</span>
+        <span class="factor">Energy Index</span><br>
+        <span style="visibility:hidden;" class="op">=</span>
         <span class="op">×</span>
-        <span class="factor">Scarcity Factor</span>
+        <span class="factor">Clean Energy Multiplier</span><br>
+        <span style="visibility:hidden;" class="op">=</span>
+        <span class="op">×</span>
+        <span class="factor">Scarcity Factor</span><br>
+        <span style="visibility:hidden;" class="op">=</span>
         <span class="op">×</span>
         <span class="factor">Volume Factor</span>
       </div>
@@ -845,10 +853,10 @@ footer {
 <footer>
   <div class="container">
     <div class="footer-logo">GAMINIUM</div>
-    <div class="footer-version">Protocol v1.0.0 &nbsp;·&nbsp; Released under MIT License</div>
+    <div class="footer-version">Protocol v1.1.0 &nbsp;·&nbsp; Released under MIT License</div>
     <div class="footer-links">
       <a href="https://github.com/ocmandravin/Gaminium" target="_blank" rel="noopener">github.com/ocmandravin/Gaminium</a>
-      <a href="GAMINIUM_Whitepaper_v1.0.0.pdf" download>Whitepaper</a>
+      <a href="GAMINIUM_Whitepaper_v1.1.0.pdf" download>Whitepaper</a>
       <a href="#hero">Back to top ↑</a>
     </div>
     <div class="footer-tagline">"<span>Energy never dies.</span> Neither does value."</div>
