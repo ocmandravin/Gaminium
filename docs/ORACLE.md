@@ -1,54 +1,25 @@
 # GAMINIUM Oracle Node Guide
 
-## What Oracles Do
-
-Oracle nodes independently fetch government energy and commodity data, run AI validation, compute the price floor, and submit signed results to the network every 2,016 blocks (~1 week).
+## What Oracle Nodes Do
+- Fetch energy prices from 30+ government sources
+- Fetch carbon intensity from 15+ grid operators
+- Fetch commodity prices (gold, oil, gas, carbon)
+- Run AI validation on all data
+- Calculate price floor every 2016 blocks
+- Earn 10% of all network transaction fees
 
 ## Requirements
+- Minimum stake: 10,000 GMN
+- Uptime: 99% minimum
+- Max 3 nodes per country
 
-- Stake: **10,000 GMN** (slashed for dishonest submissions)
-- Network: One static IP address
-- Location: Max 3 oracle nodes per country
-- Uptime: Recommended 99.9%+ — missed submissions reduce earnings
+## Run Oracle Node
+./build/gmn-oracle start
 
-## Setup
-
-```bash
-# 1. Create a dedicated oracle wallet
-./build/gmn-wallet new
-# Save the 24-word mnemonic securely
-
-# 2. Stake 10,000 GMN to the oracle contract (on-chain transaction)
-# (handled by the full node once on mainnet)
-
-# 3. Start the oracle node
-./build/gmn-oracle '<24-word mnemonic>' <COUNTRY-CODE>
-
-# Example:
-./build/gmn-oracle 'word1 word2 ... word24' US
-```
-
-## AI Validation
-
-Every data point is scored before use:
-
-| Confidence | Band | Action |
-|-----------|------|--------|
-| 95-100% | HIGH | Accepted at full weight |
-| 80-94% | MEDIUM | Accepted, anomaly noted |
-| 60-79% | LOW | Accepted at 50% weight |
-| <60% | REJECTED | Excluded from calculation |
-
-AI models used:
-- **Isolation Forest** — statistical outlier detection
-- **LSTM** — time-series pattern violation detection
-
-Both models are deterministic: same input → same output on every node.
-
-## Slashing
-
-Nodes whose submitted floor price deviates **more than 10%** from the network median will have their stake slashed. Slashed funds go to the treasury.
-
-## Revenue
-
-Oracle nodes earn 10% of all transaction fees proportional to their stake.
+## Data Sources
+Energy: EIA (USA), Eurostat (EU), IEA (Global),
+        NEPRA (Pakistan), BEIS (UK), and 25+ more
+Carbon: ENTSO-E (Europe), EPA eGRID (USA),
+        National Grid ESO (UK), and 12+ more
+Commodities: LBMA gold, EIA oil,
+             Henry Hub gas, EU ETS carbon

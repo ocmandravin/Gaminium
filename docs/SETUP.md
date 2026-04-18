@@ -1,63 +1,29 @@
-# GAMINIUM Node Setup Guide
+# GAMINIUM Setup Guide
 
 ## Requirements
-
-- Go 1.22 or higher
-- Linux / macOS / Windows
-- 4GB RAM minimum (8GB recommended for oracle nodes)
-- 100GB SSD storage (growing blockchain)
-- Stable internet connection
+- Go 1.21 or higher
+- macOS, Linux, or Windows
 
 ## Install Go
+macOS: brew install go
+Other: golang.org/dl
 
-```bash
-# macOS
-brew install go
+## Clone and Build
+git clone https://github.com/ocmandravin/Gaminium.git
+cd Gaminium
+go mod tidy && make build
 
-# Linux
-wget https://go.dev/dl/go1.22.linux-amd64.tar.gz
-tar -C /usr/local -xzf go1.22.linux-amd64.tar.gz
-export PATH=$PATH:/usr/local/go/bin
-```
+## Quick Start
 
-## Build from Source
+1. Create wallet:
+./build/gmn-wallet new
+Save your 24 word mnemonic safely
 
-```bash
-git clone https://github.com/ocamndravin/gaminium
-cd gaminium
-make build
-```
+2. Start full node:
+./build/gaminium start
 
-Binaries will be in `./build/`.
+3. Start mining (new terminal):
+./build/gmn-mine GMN1YOUR_ADDRESS_HERE
 
-## Run a Full Node
-
-```bash
-./build/gaminium
-```
-
-The node will:
-1. Initialise the blockchain with the genesis block
-2. Connect to DNS seeds and bootstrap nodes
-3. Begin syncing with the network
-4. Accept connections on port 8333
-
-## Ports
-
-| Port | Service |
-|------|---------|
-| 8333 | P2P network |
-| 8332 | RPC (local) |
-| 8334 | Oracle P2P |
-
-## Data Directory
-
-The node stores chain data in `~/.gaminium/` by default.
-
-## Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| GMN_PORT | 8333 | P2P port |
-| GMN_DATA | ~/.gaminium | Data directory |
-| GMN_PEERS | 125 | Max peer connections |
+4. Run oracle node (optional):
+./build/gmn-oracle start
